@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lintar" : " eslint --fix --ext .ts src/**/*",
     "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/server.ts",
-    "docker:up": "docker-compose up -d"
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
   },
   "keywords": [],
   "author": "Bruno Vieira",

@@ -1,14 +1,3 @@
-
-const getAllProducts = async () => {
-    const products = [{ "type": "purchase", "category": "cards", "amount": "12.90" }]
-    const delayTime = Math.random() * 5000
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve(products)
-        }, delayTime)
-    })
-}
-
 export const responseTimeMiddleware = (req, res, next) => {
     const start = process.hrtime()
     res.on('finish', () => {

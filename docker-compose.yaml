@@ -1,28 +1,31 @@
 version: '3'
+
 services:
   postgres:
-    image: postgres:latest
-    environment:
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: admin
-    ports:
-      - "5432:5432"
-    networks:
-      - back-tier
-    volumes:
-      - postgres-db-volume:/var/lib/postgresql/data
+    image: postgres:10
+    container_name: postgres-lab
     restart: always
-
-
+    ports:
+      - "32773:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
   redis:
     image: redis:latest
+    container_name: redis-lab
     restart: always
     ports:
       - "6379:6379"
     networks:
-      - back-tier
+      - backend
+
+volumes:
+  postgres_data:
 
 networks:
-  back-tier: {}
-
-
+  backend:
+    driver: bridge

@@ -10,7 +10,7 @@ interface IProduct {
     price: number
 }
 
-let productsBD: IProduct[] = [
+const productsBD: IProduct[] = [
     { id: 1, name: 'Product 1', price: 10 },
     { id: 2, name: 'Product 2', price: 20.23 },
     { id: 3, name: 'Product 3', price: 30.23 },
@@ -19,37 +19,40 @@ let productsBD: IProduct[] = [
     { id: 6, name: 'Product 6', price: 60.23 },
 ]
 
-/* 
-// esta é a única rota que usa o milddleware responseTimeMiddleware
-*/
+
 router.get('/', responseTimeMiddleware, (req: Request, res: Response) => {
     const delayTime = Math.random() * 5000
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         setTimeout(() => {
             resolve(res.json(productsBD))
         }, delayTime)
     })
 })
 
-router.get('/:id', (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
-    const product = productsBD.find((p) => p.id === id);
+router.get('/:id', responseTimeMiddleware, (req: Request, res: Response) => {
+    const id = parseInt(req.params.id)
+    const product = productsBD.find((p) => p.id === id)
     if (product) {
-        res.json(product);
+        const delayTime = Math.random() * 5000
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(res.json(product))
+            }, delayTime)
+        })
     } else {
-        res.status(404).json({ message: 'Product not found' });
+        res.status(404).json({ message: 'Product not found' })
     }
-});
+})
 
 router.post('/', (req: Request, res: Response) => {
     const { name, price } = req.body
-    if(typeof price != 'number' ){
-        res.status(400).json({ message: 'Price must be a number' });
-    }    
-    const id = productsBD.length + 1;
-    const newProduct = { id, name, price };
-    productsBD.push(newProduct);
-    res.status(201).json(newProduct);
-});
+    if (typeof price != 'number') {
+        res.status(400).json({ message: 'Price must be a number' })
+    }
+    const id = productsBD.length + 1
+    const newProduct = { id, name, price }
+    productsBD.push(newProduct)
+    res.status(201).json(newProduct)
+})
 
 export { router }
