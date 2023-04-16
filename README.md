@@ -6,5 +6,10 @@ O lab simula um delay no response de um endpoint, e quando adicionamos a camada 
 
 
 ## Tools
-Extensao necessária para manusear  as chaves do Redis
+Ferramentas para manuesear as chaves no Redis
+
+Ferramenta oficial
+https://redis.com/redis-enterprise/redis-insight/#insight-form
+
+Extensao do VSCode para manusear as chaves do Redis
 https://github.com/cweijan/vscode-database-client
