@@ -1,6 +1,7 @@
 import express from 'express'
 import { Request, Response } from 'express'
 import { responseTimeMiddleware } from '../middleware/responseTime'
+import { redisConnection } from '../../utils/redis'
 const router = express.Router()
 
 
@@ -31,7 +32,14 @@ router.get('/', responseTimeMiddleware, (req: Request, res: Response) => {
 
 router.get('/:id', responseTimeMiddleware, (req: Request, res: Response) => {
     const id = parseInt(req.params.id)
+
+    
     const product = productsBD.find((p) => p.id === id)
+
+    if (id === 3){
+        redisConnection()
+    }
+
     if (product) {
         const delayTime = Math.random() * 5000
         return new Promise((resolve) => {
