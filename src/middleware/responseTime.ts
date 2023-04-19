@@ -1,4 +1,5 @@
-export const responseTimeMiddleware = (req, res, next) => {
+import { Request, Response, NextFunction } from "express"
+export const responseTime = (req: Request, res: Response, next: NextFunction) => {
     const start = process.hrtime()
     res.on('finish', () => {
         const end = process.hrtime(start)

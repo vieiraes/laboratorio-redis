@@ -1,7 +1,7 @@
 import express from 'express'
 import { Request, Response } from 'express'
-import { responseTimeMiddleware } from '../middleware/responseTime'
-import { redisConnection } from '../../utils/redis'
+import * as middleware from '../middleware'
+import { RedisCLient } from '../services/redis'
 const router = express.Router()
 
 
@@ -13,33 +13,31 @@ interface IProduct {
 
 const productsBD: IProduct[] = [
     { id: 1, name: 'Product 1', price: 10 },
-    { id: 2, name: 'Product 2', price: 20.23 },
-    { id: 3, name: 'Product 3', price: 30.23 },
-    { id: 4, name: 'Product 4', price: 40.23 },
-    { id: 5, name: 'Product 5', price: 50.23 },
+    { id: 2, name: 'Product 2', price: 22.99 },
+    { id: 3, name: 'Product 3', price: 35.26 },
+    { id: 4, name: 'Product 4', price: 47.25 },
+    { id: 5, name: 'Product 5', price: 53.53 },
     { id: 6, name: 'Product 6', price: 60.23 },
+    { id: 7, name: 'Product 7', price: 65.23 },
+    { id: 8, name: 'Product 8', price: 70.44 },
+    { id: 9, name: 'Product 9', price: 75.00 },
+    { id: 10, name: 'Product 10', price: 80.88 },
 ]
 
 
-router.get('/', responseTimeMiddleware, (req: Request, res: Response) => {
-    const delayTime = Math.random() * 5000
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(res.json(productsBD))
-        }, delayTime)
-    })
+router.get('/', middleware.responseTime, middleware.delayTime, (req: Request, res: Response) => {
+ 
+    return res.json(productsBD)
+
 })
 
-router.get('/:id', responseTimeMiddleware, (req: Request, res: Response) => {
+router.get('/:id', middleware.responseTime, (req: Request, res: Response) => {
     const id = parseInt(req.params.id)
-
-    
     const product = productsBD.find((p) => p.id === id)
-
-    if (id === 3){
-        redisConnection()
-    }
-
+    // const redis = new RedisCLient()
+    // redis.setCache(id, product)
+    
+   
     if (product) {
         const delayTime = Math.random() * 5000
         return new Promise((resolve) => {

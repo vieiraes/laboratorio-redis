@@ -8,7 +8,7 @@ class RedisCLient {
             return await client.connect()
         }
     }
-    async setCache(key: string, value: string) {
+    async setCache(key: any, value: any) {
         const client = createClient()
         return await client.set(key, value)
     }
