@@ -26,23 +26,29 @@ const productsBD: IProduct[] = [
   { id: "10", name: 'Product 10', price: 80.88 },
 ]
 
-router.get('/redis/:id', async (req: Request, res: Response) => {
+/* 
+LISTA PRODUCT POR ID
+ESTE ENDPOINT É O QUE SIMULA COM O REDIS
+ */
+router.get('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
   let isCached = false;
   let results: IProduct | undefined;
   const redis = new Redis() // ja se conecta
+  let hasDelay = false;
 
   try {
     const cacheResponse = await redis.get(id)
-
     if (cacheResponse) {
-      isCached = true;
+      isCached = true
       results = JSON.parse(cacheResponse);
+      hasDelay = false
     } else {
       results = productsBD.find((p) => p.id === id)
       if (results) {
+        hasDelay = true
         redis.set(id, JSON.stringify(results))
-      }else{
+      } else {
         res.status(404).send({
           "message": "not found"
         })
@@ -51,8 +57,16 @@ router.get('/redis/:id', async (req: Request, res: Response) => {
     const objectResponse = {
       isCached,
       result: results,
-    };
-    res.status(200).send(objectResponse)
+    }
+    if (!hasDelay) { //REDIS
+      res.status(200).send(objectResponse)
+    }
+    if (hasDelay) {//BD
+      const time = Math.random() * 5000
+      setTimeout(() => {
+        res.status(200).send(objectResponse)
+      }, time)
+    }
   } catch (e) {
     console.error(e);
     res.status(500).send({
@@ -62,56 +76,23 @@ router.get('/redis/:id', async (req: Request, res: Response) => {
   }
 
 })
+//LISTA TODOS PRODUCTS
+router.get('/', middleware.responseTime, middleware.delayTime, (req: Request, res: Response) => {
+  return res.json(productsBD)
+})
 
 
 
-
-
-
-
-
-
-
-
-// router.get('/', middleware.responseTime, middleware.delayTime, (req: Request, res: Response) => {
-//     return res.json(productsBD)
-// })
-
-// router.get('/:id', middleware.responseTime, async (req: Request, res: Response) => {
-//     const { id } = req.params
-//     const redis = new RedisCLient()
-//     await redis.connect()
-//     const itemCache = await redis.getCache(id)
-
-//     if (itemCache) {
-//         res.status(200).json(itemCache)
-//     }
-//     const itemDB = await productsBD.find((p) => p.id === parseInt(id));
-
-//     if (itemDB) {
-//         redis.setCache(id, String(itemDB))
-//         const delayTime = Math.random() * 5000
-//         setTimeout(() => {
-//             res.status(200).json(itemDB)
-//         }, delayTime)
-//     } else {
-//         res.status(404).json({
-//             message: 'Product not found'
-//         })
-//     }
-// })
-
-
-
-// router.post('/', (req: Request, res: Response) => {
-//     const { name, price } = req.body
-//     if (typeof price != 'number') {
-//         res.status(400).json({ message: 'Price must be a number' })
-//     }
-//     const id = productsBD.length + 1
-//     const newProduct = { id, name, price }
-//     productsBD.push(newProduct)
-//     res.status(201).json(newProduct)
-// })
+//CRIA NOVO PRODUCT
+router.post('/', (req: Request, res: Response) => {
+  const { name, price } = req.body
+  if (typeof price != 'number') {
+    res.status(400).json({ message: 'Price must be a number' })
+  }
+  const id = (productsBD.length + 1).toString()
+  const newProduct = { id, name, price }
+  productsBD.push(newProduct)
+  res.status(201).json(newProduct)
+})
 
 export { router }

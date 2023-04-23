@@ -1,5 +1,5 @@
 import express from "express"
-import * as contollers from './controllers'
+import * as controllers from './controllers'
 
 
 const app = express()
@@ -26,5 +26,5 @@ bootstrap()
 /**
  * @route
  */
-app.use('/products', contollers.ProductController)
-app.use('/', contollers.HealthCheckController)
+app.use('/products', controllers.ProductController)
+app.use('/', controllers.HealthCheckController)
